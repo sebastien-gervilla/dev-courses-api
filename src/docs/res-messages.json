@@ -1,0 +1,44 @@
+{
+    "user": {
+        "gotAll": "Successfully fetched users",
+        "gotOne": "Successfully fetched user",
+        "created": "Successfully created user",
+        "updated": "Successfully updated user",
+        "deleted": "Successfully deleted user",
+        "login": "Successfully logged in",
+        "logout": "Successfully logged out",
+        
+        "wrongInput":"Identifiants incorrects",
+        "notFound": "Cet utilisateur n'existe pas"
+    },
+    "tutorial": {
+        "gotAll": "Successfully fetched tutorials",
+        "gotOne": "Successfully fetched tutorial",
+        "created": "Successfully created tutorial",
+        "updated": "Successfully updated tutorial",
+        "deleted": "Successfully deleted tutorial",
+        
+        "wrongInput":"Identifiants incorrects",
+        "notFound": "Cet utilisateur n'existe pas"
+    },
+    "token": {
+        "created": "Successfully created token"
+    },
+    "defaults": {
+        "gotAll": "Successfully fetched",
+        "gotOne": "Successfully fetched",
+        "created": "Successfully created",
+        "updated": "Successfully updated",
+        "deleted": "Successfully deleted",
+        "auth": "Successfully authenticated",
+        "login": "Successfully logged in",
+        "logout": "Successfully logged out",
+
+        "wrongInput": "Invalid values provided",
+        "unAuth": "Unauthorized",
+        "notAllowed": "Action not allowed",
+        "noToken": "Invalid or expired token",
+
+        "serverError": "Internal Server Error"
+    }
+}
