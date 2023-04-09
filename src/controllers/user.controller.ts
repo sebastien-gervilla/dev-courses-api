@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { CookieOptions, Request, Response } from "express";
 import { isValidObjectId } from 'mongoose';
 import { validationResult } from "express-validator";
 import User, { hashPassword, UserModel } from '../models/user.model';
@@ -6,6 +6,7 @@ import ResetToken, { generateToken } from "../models/reset-token.model";
 import { Res, MailHelper, CookieHelper } from "../helpers";
 
 import messages from '../docs/res-messages.json';
+import { getDaysAfter } from "../utils/date-functions";
 const { wrongInput, notFound } = messages.user;
 const { noToken, unAuth } = messages.defaults;
 
@@ -247,10 +248,17 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 const generateConnectionToken = async (user: UserModel, res: Response) => {
     const token = await user.generateJwt();
-    const options = {
-        httpOnly: true
+    const options: CookieOptions = {
+        httpOnly: true,
+        expires: getDaysAfter(15),
+        path: '/'
     };
 
-    CookieHelper.send(res, { name: 'token', value: token, options })
-    return Res.send(res, 200, messages.user.login, token);
+    CookieHelper.send(res, {
+        name: 'token',
+        value: token,
+        options
+    });
+
+    return Res.send(res, 204, messages.user.login);
 }

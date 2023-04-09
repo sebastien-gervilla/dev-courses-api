@@ -9,8 +9,6 @@ const { unAuth, notAllowed, serverError } = messages.defaults;
 export const isAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { token } = req.cookies;
-        console.log("Token : ", token);
-        
     
         if (!token) return Res.send(res, 401, unAuth);
         
