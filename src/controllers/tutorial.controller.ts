@@ -20,6 +20,24 @@ export const getTutorials = async (req: Request, res: Response) => {
     }
 }
 
+export const getTutorial = async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params;
+        if (!slug) return Res.send(res, 404, notFound);
+
+        const tutorial = await Tutorial.findOne({ slug });
+
+        console.log(tutorial);
+        
+
+        if (!tutorial) return Res.send(res, 404, notFound);
+
+        return Res.send(res, 200, messages.tutorial.gotAll, tutorial);
+    } catch (error) {
+        return Res.send(res, 500, serverError);
+    }
+}
+
 // CREATE
 
 export const createTutorial = async (req: Request, res: Response) => {
