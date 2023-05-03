@@ -9,6 +9,14 @@ export interface UserModel extends Mongoose.Document {
     email: string,
     password: string,
     isAdmin: boolean,
+    courses: Array<{
+        course: {
+            type: Mongoose.Schema.Types.ObjectId,
+            ref: "Tutorial"
+        },
+        startingDate: Date,
+        isCompleted: boolean
+    }>
     verifyPassword: (plainPassword: string) => Promise<boolean>;
     generateJwt: () => Promise<string>
 }
@@ -43,6 +51,24 @@ const UserSchema = new Mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false,
+        required: true
+    },
+    courses: {
+        type: [{
+            course: {
+                type: Mongoose.Schema.Types.ObjectId,
+                ref: "Tutorial"
+            },
+            startingDate: {
+                type: Date,
+                default: Date.now
+            },
+            isCompleted: {
+                type: Boolean,
+                default: false
+            }
+        }],
+        default: [],
         required: true
     }
 }, {
