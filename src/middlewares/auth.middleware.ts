@@ -27,7 +27,7 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
 
 export const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (res.locals.user?.isAdmin)
+        if (!res.locals.user?.isAdmin)
             return Res.send(res, 403, notAllowed);
     
         return next();
