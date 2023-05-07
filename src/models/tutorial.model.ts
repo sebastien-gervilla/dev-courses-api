@@ -15,12 +15,14 @@ const TutorialSchema = new Mongoose.Schema({
         type: String,
         maxlength: 64,
         required: true,
+        unique: true,
         trim: true
     },
     title: {
         type: String,
         maxlength: 64,
         required: true,
+        unique: true,
         trim: true
     },
     description: {
@@ -36,10 +38,9 @@ const TutorialSchema = new Mongoose.Schema({
     },
     technology: {
         type: String,
-        maxlength: 320,
+        maxlength: 64,
         required: true,
-        trim: true,
-        unique: true
+        trim: true
     },
     hoursToLearn: {
         type: Number,

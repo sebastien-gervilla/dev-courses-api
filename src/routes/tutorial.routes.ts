@@ -11,7 +11,7 @@ import { isAuth, isAdmin } from '../middlewares/auth.middleware';
 const Router = express.Router();
 
 Router.get('/', getTutorials);
-Router.post('/', createTutorial);
+Router.post('/', isAuth, isAdmin, createTutorial);
 
 Router.get('/:slug', getTutorial);
 
