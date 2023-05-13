@@ -26,10 +26,6 @@ export const getTutorial = async (req: Request, res: Response) => {
         if (!slug) return Res.send(res, 404, notFound);
 
         const tutorial = await Tutorial.findOne({ slug });
-
-        console.log(tutorial);
-        
-
         if (!tutorial) return Res.send(res, 404, notFound);
 
         return Res.send(res, 200, messages.tutorial.gotAll, tutorial);
@@ -59,6 +55,31 @@ export const createTutorial = async (req: Request, res: Response) => {
 }
 
 // UPDATE
+
+export const updateTutorial = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id;
+        if (!isValidObjectId(id))
+            return Res.send(res, 404, notFound);
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return Res.send(res, 400, wrongInput);
+
+        const OldTutorial = await Tutorial.findById(id);
+        if (!OldTutorial) return Res.send(res, 404, notFound);
+        
+        await Tutorial.findByIdAndUpdate(
+            id,
+            { $set: req.body },
+            { new: true, runValidators: true }
+        );
+    
+        return Res.send(res, 204, messages.tutorial.updated);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}
 
 // DELETE
 
