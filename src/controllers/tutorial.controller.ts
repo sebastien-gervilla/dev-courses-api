@@ -60,3 +60,17 @@ export const createTutorial = async (req: Request, res: Response) => {
 
 // UPDATE
 
+// DELETE
+
+export const deleteTutorial = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id) return Res.send(res, 400, wrongInput);
+
+        await Tutorial.findByIdAndDelete(id)
+
+        return Res.send(res, 204, messages.tutorial.deleted);
+    } catch (error) {
+        return Res.send(res, 500, serverError);
+    }
+}
