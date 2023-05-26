@@ -5,8 +5,10 @@ import Tutorial from '../models/tutorial.model';
 import { Res } from "../helpers";
 
 import messages from '../docs/res-messages.json';
+import User from "../models/user.model";
 const { wrongInput, notFound } = messages.tutorial;
 const { noToken, serverError } = messages.defaults;
+const userNotFound = messages.user.notFound;
 
 // GET
 
@@ -51,6 +53,41 @@ export const createTutorial = async (req: Request, res: Response) => {
         return Res.send(res, 201, messages.tutorial.created);
     } catch (error) {
         return Res.send(res, 500, serverError);
+    }
+}
+
+export const followTutorial = async (req: Request, res: Response) => {
+    try {
+        const { _id } = res.locals.user;
+        if (!isValidObjectId(_id))
+            return Res.send(res, 404, userNotFound);
+
+        const { tutorialId } = req.params;
+        if (!isValidObjectId(_id))
+            return Res.send(res, 404, notFound);
+
+        const user = await User.findById(_id);
+        if (!user) return Res.send(res, 404, userNotFound);
+
+        const isFollowed = await User.findOne(
+            { _id }, 
+            { courses: { 
+                $elemMatch: {
+                    _id: tutorialId
+                }
+            }}
+        );
+
+        console.log("isFollowed : ", isFollowed);
+
+        // await new User({
+        //     ...req.body,
+        //     isAdmin: false
+        // }).save();
+
+        return Res.send(res, 201, messages.user.created);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
     }
 }
 
