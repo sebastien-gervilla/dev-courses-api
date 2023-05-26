@@ -31,6 +31,10 @@ const TutorialSchema = new Mongoose.Schema({
         required: true,
         trim: true
     },
+    summary: {
+        type: [String],
+        required: true
+    },
     content: {
         type: String,
         required: true,
