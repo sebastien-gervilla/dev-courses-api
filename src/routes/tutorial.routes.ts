@@ -4,7 +4,9 @@ import express from 'express';
 // Controller imports
 import { 
     getTutorials, getTutorial,
-    createTutorial
+    createTutorial, followTutorial,
+    updateTutorial,
+    deleteTutorial
 } from '../controllers/tutorial.controller';
 import { isAuth, isAdmin } from '../middlewares/auth.middleware';
 
@@ -14,5 +16,9 @@ Router.get('/', getTutorials);
 Router.post('/', isAuth, isAdmin, createTutorial);
 
 Router.get('/:slug', getTutorial);
+
+Router.post('/:id/follow', isAuth, followTutorial)
+Router.put('/:id', isAuth, isAdmin, updateTutorial);
+Router.delete('/:id', isAuth, isAdmin, deleteTutorial);
 
 export default Router;

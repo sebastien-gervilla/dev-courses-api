@@ -5,14 +5,16 @@ import Tutorial from '../models/tutorial.model';
 import { Res } from "../helpers";
 
 import messages from '../docs/res-messages.json';
+import User from "../models/user.model";
 const { wrongInput, notFound } = messages.tutorial;
-const { noToken, serverError } = messages.defaults;
+const { notAllowed, serverError } = messages.defaults;
+const userNotFound = messages.user.notFound;
 
 // GET
 
 export const getTutorials = async (req: Request, res: Response) => {
     try {
-        const tutorials = await Tutorial.find();
+        const tutorials = await Tutorial.find().select('-content');
 
         return Res.send(res, 200, messages.tutorial.gotAll, tutorials);
     } catch (error) {
@@ -26,11 +28,15 @@ export const getTutorial = async (req: Request, res: Response) => {
         if (!slug) return Res.send(res, 404, notFound);
 
         const tutorial = await Tutorial.findOne({ slug });
-
-        console.log(tutorial);
-        
-
         if (!tutorial) return Res.send(res, 404, notFound);
+
+        const { _id } = res.locals.user;
+        const user = await User.findOne({
+            _id, 
+            'courses.course': { $ne: tutorial._id }
+        });
+        
+        if (!user) return Res.send(res, 403, notAllowed);
 
         return Res.send(res, 200, messages.tutorial.gotAll, tutorial);
     } catch (error) {
@@ -58,5 +64,68 @@ export const createTutorial = async (req: Request, res: Response) => {
     }
 }
 
+export const followTutorial = async (req: Request, res: Response) => {
+    try {
+        const { _id } = res.locals.user;
+
+        const { tutorialId } = req.params;
+        if (!isValidObjectId(_id))
+            return Res.send(res, 404, notFound);
+
+        const followingUser = await User.findOne({ _id, 'courses.course': tutorialId });
+        if (followingUser)
+            return Res.send(res, 204, messages.tutorial.created);
+
+        await User.findOneAndUpdate(
+            { _id, 'courses.course': { $ne: tutorialId } },
+            { $addToSet: { courses: { course: tutorialId } } },
+            { new: true, upsert: true }
+        );
+
+        return Res.send(res, 204, messages.tutorial.followed);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}
+
 // UPDATE
 
+export const updateTutorial = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id;
+        if (!isValidObjectId(id))
+            return Res.send(res, 404, notFound);
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return Res.send(res, 400, wrongInput);
+
+        const OldTutorial = await Tutorial.findById(id);
+        if (!OldTutorial) return Res.send(res, 404, notFound);
+        
+        await Tutorial.findByIdAndUpdate(
+            id,
+            { $set: req.body },
+            { new: true, runValidators: true }
+        );
+    
+        return Res.send(res, 204, messages.tutorial.updated);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}
+
+// DELETE
+
+export const deleteTutorial = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id) return Res.send(res, 400, wrongInput);
+
+        await Tutorial.findByIdAndDelete(id)
+
+        return Res.send(res, 204, messages.tutorial.deleted);
+    } catch (error) {
+        return Res.send(res, 500, serverError);
+    }
+}

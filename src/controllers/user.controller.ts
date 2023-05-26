@@ -74,40 +74,6 @@ export const createUser = async (req: Request, res: Response) => {
     }
 }
 
-export const followCourse = async (req: Request, res: Response) => {
-    try {
-        const { id, tutorialId } = req.params;
-        if (!isValidObjectId(id))
-            return Res.send(res, 404, notFound);
-
-        if (!isValidObjectId(id))
-            return Res.send(res, 404, messages.tutorial.notFound);
-
-        const user = await User.findById(id);
-        if (!user) return Res.send(res, 404, notFound);
-
-        const isFollowed = await User.findOne(
-            { _id: id }, 
-            { courses: { 
-                $elemMatch: {
-                    _id: tutorialId
-                }
-            }}
-        );
-
-        console.log(isFollowed);
-
-        // await new User({
-        //     ...req.body,
-        //     isAdmin: false
-        // }).save();
-
-        return Res.send(res, 201, messages.user.created);
-    } catch (error) {
-        return Res.send(res, 500, messages.defaults.serverError);
-    }
-}
-
 // UPDATE
 
 export const updateUser = async (req: Request, res: Response) => {

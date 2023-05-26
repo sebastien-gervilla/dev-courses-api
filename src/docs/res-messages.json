@@ -17,6 +17,8 @@
         "created": "Successfully created tutorial",
         "updated": "Successfully updated tutorial",
         "deleted": "Successfully deleted tutorial",
+
+        "followed": "Successfully followed tutorial",
         
         "wrongInput":"Identifiants incorrects",
         "notFound": "Cet utilisateur n'existe pas"
