@@ -7,14 +7,14 @@ import { Res } from "../helpers";
 import messages from '../docs/res-messages.json';
 import User from "../models/user.model";
 const { wrongInput, notFound } = messages.tutorial;
-const { noToken, serverError } = messages.defaults;
+const { notAllowed, serverError } = messages.defaults;
 const userNotFound = messages.user.notFound;
 
 // GET
 
 export const getTutorials = async (req: Request, res: Response) => {
     try {
-        const tutorials = await Tutorial.find();
+        const tutorials = await Tutorial.find().select('-content');
 
         return Res.send(res, 200, messages.tutorial.gotAll, tutorials);
     } catch (error) {
@@ -29,6 +29,14 @@ export const getTutorial = async (req: Request, res: Response) => {
 
         const tutorial = await Tutorial.findOne({ slug });
         if (!tutorial) return Res.send(res, 404, notFound);
+
+        const { _id } = res.locals.user;
+        const user = await User.findOne({
+            _id, 
+            'courses.course': { $ne: tutorial._id }
+        });
+        
+        if (!user) return Res.send(res, 403, notAllowed);
 
         return Res.send(res, 200, messages.tutorial.gotAll, tutorial);
     } catch (error) {
@@ -59,33 +67,22 @@ export const createTutorial = async (req: Request, res: Response) => {
 export const followTutorial = async (req: Request, res: Response) => {
     try {
         const { _id } = res.locals.user;
-        if (!isValidObjectId(_id))
-            return Res.send(res, 404, userNotFound);
 
         const { tutorialId } = req.params;
         if (!isValidObjectId(_id))
             return Res.send(res, 404, notFound);
 
-        const user = await User.findById(_id);
-        if (!user) return Res.send(res, 404, userNotFound);
+        const followingUser = await User.findOne({ _id, 'courses.course': tutorialId });
+        if (followingUser)
+            return Res.send(res, 204, messages.tutorial.created);
 
-        const isFollowed = await User.findOne(
-            { _id }, 
-            { courses: { 
-                $elemMatch: {
-                    _id: tutorialId
-                }
-            }}
+        await User.findOneAndUpdate(
+            { _id, 'courses.course': { $ne: tutorialId } },
+            { $addToSet: { courses: { course: tutorialId } } },
+            { new: true, upsert: true }
         );
 
-        console.log("isFollowed : ", isFollowed);
-
-        // await new User({
-        //     ...req.body,
-        //     isAdmin: false
-        // }).save();
-
-        return Res.send(res, 201, messages.user.created);
+        return Res.send(res, 204, messages.tutorial.followed);
     } catch (error) {
         return Res.send(res, 500, messages.defaults.serverError);
     }
