@@ -15,7 +15,7 @@ const Router = express.Router();
 Router.get('/', getTutorials);
 Router.post('/', isAuth, isAdmin, createTutorial);
 
-Router.get('/:slug', getTutorial);
+Router.get('/:slug', isAuth, getTutorial);
 
 Router.post('/:id/follow', isAuth, followTutorial)
 Router.put('/:id', isAuth, isAdmin, updateTutorial);
