@@ -3,7 +3,7 @@ import express from 'express';
 
 // Controller imports
 import { 
-    getTutorials, getTutorial, getTutorialById,
+    getTutorials, getTutorial, getTutorialById, getTutorialPreview,
     createTutorial, followTutorial,
     updateTutorial,
     deleteTutorial
@@ -16,6 +16,7 @@ Router.get('/', getTutorials);
 Router.post('/', isAuth, isAdmin, createTutorial);
 
 Router.get('/:slug', isAuth, getTutorial);
+Router.get('/:slug/preview', isAuth, getTutorialPreview)
 
 Router.post('/:id/follow', isAuth, followTutorial)
 Router.put('/:id', isAuth, isAdmin, updateTutorial);
