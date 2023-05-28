@@ -38,7 +38,21 @@ export const getTutorial = async (req: Request, res: Response) => {
         
         if (!user) return Res.send(res, 403, notAllowed);
 
-        return Res.send(res, 200, messages.tutorial.gotAll, tutorial);
+        return Res.send(res, 200, messages.tutorial.gotOne, tutorial);
+    } catch (error) {
+        return Res.send(res, 500, serverError);
+    }
+}
+
+export const getTutorialById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id) return Res.send(res, 404, notFound);
+
+        const tutorial = await Tutorial.findById(id);
+        if (!tutorial) return Res.send(res, 404, notFound);
+
+        return Res.send(res, 200, messages.tutorial.gotOne, tutorial);
     } catch (error) {
         return Res.send(res, 500, serverError);
     }
