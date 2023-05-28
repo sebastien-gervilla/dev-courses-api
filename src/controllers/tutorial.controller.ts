@@ -8,7 +8,6 @@ import messages from '../docs/res-messages.json';
 import User from "../models/user.model";
 const { wrongInput, notFound } = messages.tutorial;
 const { notAllowed, serverError } = messages.defaults;
-const userNotFound = messages.user.notFound;
 
 // GET
 
@@ -30,10 +29,12 @@ export const getTutorial = async (req: Request, res: Response) => {
         const tutorial = await Tutorial.findOne({ slug });
         if (!tutorial) return Res.send(res, 404, notFound);
 
+        console.log(tutorial._id);
+        
         const { _id } = res.locals.user;
         const user = await User.findOne({
             _id, 
-            'courses.course': { $ne: tutorial._id }
+            'courses.course': tutorial._id
         });
         
         if (!user) return Res.send(res, 403, notAllowed);
@@ -96,17 +97,20 @@ export const followTutorial = async (req: Request, res: Response) => {
     try {
         const { _id } = res.locals.user;
 
-        const { tutorialId } = req.params;
-        if (!isValidObjectId(_id))
+        const { id } = req.params;
+        if (!isValidObjectId(id))
             return Res.send(res, 404, notFound);
 
-        const followingUser = await User.findOne({ _id, 'courses.course': tutorialId });
+        const tutorial = await Tutorial.findById(id);
+        if (!tutorial) return Res.send(res, 404, notFound);
+
+        const followingUser = await User.findOne({ _id, 'courses.course': tutorial._id });
         if (followingUser)
             return Res.send(res, 204, messages.tutorial.created);
 
         await User.findOneAndUpdate(
-            { _id, 'courses.course': { $ne: tutorialId } },
-            { $addToSet: { courses: { course: tutorialId } } },
+            { _id, 'courses.course': { $ne: tutorial._id } },
+            { $addToSet: { courses: { course: tutorial._id } } },
             { new: true, upsert: true }
         );
 
