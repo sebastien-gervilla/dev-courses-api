@@ -55,7 +55,7 @@ const UserSchema = new Mongoose.Schema({
     },
     tutorials: {
         type: [{
-            tutorial: {
+            infos: {
                 type: Mongoose.Schema.Types.ObjectId,
                 ref: "Tutorial"
             },
@@ -69,7 +69,8 @@ const UserSchema = new Mongoose.Schema({
             }
         }],
         default: [],
-        required: true
+        required: true,
+        select: false
     }
 }, {
     timestamps: true,

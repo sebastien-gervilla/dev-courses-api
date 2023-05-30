@@ -30,11 +30,11 @@ export const getTutorial = async (req: Request, res: Response) => {
         if (!tutorial) return Res.send(res, 404, notFound);
         
         const { _id, isAdmin } = res.locals.user;
-        if (isAdmin) Res.send(res, 200, gotOne, tutorial); 
+        if (isAdmin) return Res.send(res, 200, gotOne, tutorial); 
         
         const user = await User.findOne({
             _id, 
-            'tutorials.tutorial': tutorial._id
+            'tutorials.infos': tutorial._id
         });
         
         if (!user) return Res.send(res, 403, notAllowed);
@@ -104,12 +104,12 @@ export const followTutorial = async (req: Request, res: Response) => {
         const tutorial = await Tutorial.findById(id);
         if (!tutorial) return Res.send(res, 404, notFound);
 
-        const followingUser = await User.findOne({ _id, 'tutorials.tutorial': tutorial._id });
+        const followingUser = await User.findOne({ _id, 'tutorials.infos': tutorial._id });
         if (followingUser)
             return Res.send(res, 204, messages.tutorial.created);
 
         await User.findOneAndUpdate(
-            { _id, 'tutorials.tutorial': { $ne: tutorial._id } },
+            { _id, 'tutorials.infos': { $ne: tutorial._id } },
             { $addToSet: { tutorials: { tutorial: tutorial._id } } },
             { new: true, upsert: true }
         );
