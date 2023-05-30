@@ -11,7 +11,7 @@ import {
     changePassword, requestResetPassword, resetPassword
 } from '../controllers/user.controller';
 import { isAuth, isAdmin } from '../middlewares/auth.middleware';
-import { userValidations } from '../models/user.model';
+import { userValidations, updateValidations } from '../models/user.model';
 
 const Router = express.Router();
 
@@ -23,7 +23,7 @@ Router.post('/login', login);
 Router.post('/logout', logout);
 
 Router.get('/:id', getUser);
-Router.put('/:id', userValidations, updateUser);
+Router.put('/:id', isAuth, updateValidations, updateUser);
 Router.delete('/:id', deleteUser);
 
 Router.put('/:id/change-password', changePassword);
