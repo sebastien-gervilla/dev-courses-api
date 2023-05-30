@@ -6,7 +6,7 @@ import { Res } from "../helpers";
 
 import messages from '../docs/res-messages.json';
 import User from "../models/user.model";
-const { wrongInput, notFound } = messages.tutorial;
+const { wrongInput, notFound, gotOne } = messages.tutorial;
 const { notAllowed, serverError } = messages.defaults;
 
 // GET
@@ -28,10 +28,10 @@ export const getTutorial = async (req: Request, res: Response) => {
 
         const tutorial = await Tutorial.findOne({ slug });
         if (!tutorial) return Res.send(res, 404, notFound);
-
-        console.log(tutorial._id);
         
-        const { _id } = res.locals.user;
+        const { _id, isAdmin } = res.locals.user;
+        if (isAdmin) Res.send(res, 200, gotOne, tutorial); 
+        
         const user = await User.findOne({
             _id, 
             'courses.course': tutorial._id
@@ -39,7 +39,7 @@ export const getTutorial = async (req: Request, res: Response) => {
         
         if (!user) return Res.send(res, 403, notAllowed);
 
-        return Res.send(res, 200, messages.tutorial.gotOne, tutorial);
+        return Res.send(res, 200, gotOne, tutorial);
     } catch (error) {
         return Res.send(res, 500, serverError);
     }
@@ -53,7 +53,7 @@ export const getTutorialPreview = async (req: Request, res: Response) => {
         const tutorial = await Tutorial.findOne({ slug }).select('-content');
         if (!tutorial) return Res.send(res, 404, notFound);
 
-        return Res.send(res, 200, messages.tutorial.gotOne, tutorial);
+        return Res.send(res, 200, gotOne, tutorial);
     } catch (error) {
         return Res.send(res, 500, serverError);
     }
@@ -67,7 +67,7 @@ export const getTutorialById = async (req: Request, res: Response) => {
         const tutorial = await Tutorial.findById(id);
         if (!tutorial) return Res.send(res, 404, notFound);
 
-        return Res.send(res, 200, messages.tutorial.gotOne, tutorial);
+        return Res.send(res, 200, gotOne, tutorial);
     } catch (error) {
         return Res.send(res, 500, serverError);
     }
