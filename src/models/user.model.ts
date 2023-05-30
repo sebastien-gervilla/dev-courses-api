@@ -9,8 +9,8 @@ export interface UserModel extends Mongoose.Document {
     email: string,
     password: string,
     isAdmin: boolean,
-    courses: Array<{
-        course: {
+    tutorials: Array<{
+        tutorial: {
             type: Mongoose.Schema.Types.ObjectId,
             ref: "Tutorial"
         },
@@ -53,9 +53,9 @@ const UserSchema = new Mongoose.Schema({
         default: false,
         required: true
     },
-    courses: {
+    tutorials: {
         type: [{
-            course: {
+            infos: {
                 type: Mongoose.Schema.Types.ObjectId,
                 ref: "Tutorial"
             },
@@ -69,7 +69,8 @@ const UserSchema = new Mongoose.Schema({
             }
         }],
         default: [],
-        required: true
+        required: true,
+        select: false
     }
 }, {
     timestamps: true,
@@ -98,6 +99,11 @@ export const userValidations = [
     check("lname", "Last name should be atleast 2 characters.").isLength({min: 2}),
     check("email", "Invalid email.").isEmail(),
     check("password", "Password should be atleast 8 characters.").isLength({min: 8}),
+]
+
+export const updateValidations = [
+    check("fname", "First name should be atleast 3 characters.").isLength({min: 3}),
+    check("lname", "Last name should be atleast 2 characters.").isLength({min: 2})
 ]
 
 const User = Mongoose.model<UserModel>("User", UserSchema, "users");

@@ -2,19 +2,20 @@ import { CookieOptions, Request, Response } from "express";
 import { isValidObjectId } from 'mongoose';
 import { validationResult } from "express-validator";
 import User, { hashPassword, UserModel } from '../models/user.model';
-import Tutorial from "../models/tutorial.model";
 import ResetToken, { generateToken } from "../models/reset-token.model";
 import { Res, MailHelper, CookieHelper } from "../helpers";
 import { getDaysAfter } from "../utils/date-functions";
 
 import messages from '../docs/res-messages.json';
 const { wrongInput, notFound } = messages.user;
-const { noToken, unAuth } = messages.defaults;
+const { noToken, unAuth, notAllowed } = messages.defaults;
 
 // GET
 
 export const authenticate = async (req: Request, res: Response) => {
     try {
+        console.log('try auth');
+        
         if (!res.locals.user)
             return Res.send(res, 401, unAuth);
 
@@ -51,6 +52,29 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 }
 
+export const getUserTutorials = async (req: Request, res: Response) => {
+    try {
+        const { _id } = res.locals.user;
+
+        const user = await User
+            .findById(_id)
+            .select('_id')
+            .populate([
+                {
+                    path: 'tutorials', 
+                    populate: {
+                        path: 'infos',
+                        select: 'title technology'
+                    }
+                }
+            ]);
+
+        return Res.send(res, 200, messages.user.gotTutorials, user?.tutorials || []);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}
+
 // CREATE
 
 export const createUser = async (req: Request, res: Response) => {
@@ -78,9 +102,13 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
         if (!isValidObjectId(id))
             return Res.send(res, 404, notFound);
+
+        const { _id, isAdmin } = res.locals.user;
+        if (!isAdmin && _id?.toString() !== id)
+            return Res.send(res, 403, notAllowed);
 
         const errors = validationResult(req);
         if (!errors.isEmpty())
@@ -91,8 +119,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
         const updateSet = {
             fname: req.body.fname,
-            lname: req.body.lname,
-            email: req.body.email
+            lname: req.body.lname
         };
         
         await User.findByIdAndUpdate(

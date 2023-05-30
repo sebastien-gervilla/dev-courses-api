@@ -3,7 +3,7 @@ import express from 'express';
 
 // Controller imports
 import { 
-    getUsers, getUser,
+    getUsers, getUser, getUserTutorials,
     createUser, 
     updateUser, 
     deleteUser,
@@ -11,19 +11,20 @@ import {
     changePassword, requestResetPassword, resetPassword
 } from '../controllers/user.controller';
 import { isAuth, isAdmin } from '../middlewares/auth.middleware';
-import { userValidations } from '../models/user.model';
+import { userValidations, updateValidations } from '../models/user.model';
 
 const Router = express.Router();
 
 Router.get('/', isAuth, isAdmin, getUsers);
 Router.post('/', userValidations, createUser);
 
+Router.get('/tutorials', isAuth, getUserTutorials)
 Router.get('/auth', isAuth, authenticate);
 Router.post('/login', login);
 Router.post('/logout', logout);
 
 Router.get('/:id', getUser);
-Router.put('/:id', userValidations, updateUser);
+Router.put('/:id', isAuth, updateValidations, updateUser);
 Router.delete('/:id', deleteUser);
 
 Router.put('/:id/change-password', changePassword);
