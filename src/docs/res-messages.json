@@ -2,6 +2,7 @@
     "user": {
         "gotAll": "Successfully fetched users",
         "gotOne": "Successfully fetched user",
+        "gotTutorials": "Successfully fetched user tutorials",
         "created": "Successfully created user",
         "updated": "Successfully updated user",
         "deleted": "Successfully deleted user",

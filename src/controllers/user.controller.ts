@@ -1,8 +1,7 @@
 import { CookieOptions, Request, Response } from "express";
-import { isValidObjectId, ObjectId } from 'mongoose';
+import { isValidObjectId } from 'mongoose';
 import { validationResult } from "express-validator";
 import User, { hashPassword, UserModel } from '../models/user.model';
-import Tutorial from "../models/tutorial.model";
 import ResetToken, { generateToken } from "../models/reset-token.model";
 import { Res, MailHelper, CookieHelper } from "../helpers";
 import { getDaysAfter } from "../utils/date-functions";
@@ -15,6 +14,8 @@ const { noToken, unAuth, notAllowed } = messages.defaults;
 
 export const authenticate = async (req: Request, res: Response) => {
     try {
+        console.log('try auth');
+        
         if (!res.locals.user)
             return Res.send(res, 401, unAuth);
 
@@ -31,7 +32,7 @@ export const getUser = async (req: Request, res: Response) => {
         if (!isValidObjectId(id))
             return Res.send(res, 404, notFound);
 
-        const user = await User.findById(id).select('-tutorials');
+        const user = await User.findById(id);
 
         if (!user) return Res.send(res, 404, notFound);
 
@@ -46,6 +47,29 @@ export const getUsers = async (req: Request, res: Response) => {
         const users = await User.find();
 
         return Res.send(res, 200, messages.user.gotAll, users);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}
+
+export const getUserTutorials = async (req: Request, res: Response) => {
+    try {
+        const { _id } = res.locals.user;
+
+        const user = await User
+            .findById(_id)
+            .select('_id')
+            .populate([
+                {
+                    path: 'tutorials', 
+                    populate: {
+                        path: 'infos',
+                        select: 'title technology'
+                    }
+                }
+            ]);
+
+        return Res.send(res, 200, messages.user.gotTutorials, user?.tutorials || []);
     } catch (error) {
         return Res.send(res, 500, messages.defaults.serverError);
     }

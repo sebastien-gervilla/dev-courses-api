@@ -3,7 +3,7 @@ import express from 'express';
 
 // Controller imports
 import { 
-    getUsers, getUser,
+    getUsers, getUser, getUserTutorials,
     createUser, 
     updateUser, 
     deleteUser,
@@ -18,6 +18,7 @@ const Router = express.Router();
 Router.get('/', isAuth, isAdmin, getUsers);
 Router.post('/', userValidations, createUser);
 
+Router.get('/tutorials', isAuth, getUserTutorials)
 Router.get('/auth', isAuth, authenticate);
 Router.post('/login', login);
 Router.post('/logout', logout);
