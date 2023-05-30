@@ -100,5 +100,10 @@ export const userValidations = [
     check("password", "Password should be atleast 8 characters.").isLength({min: 8}),
 ]
 
+export const updateValidations = [
+    check("fname", "First name should be atleast 3 characters.").isLength({min: 3}),
+    check("lname", "Last name should be atleast 2 characters.").isLength({min: 2})
+]
+
 const User = Mongoose.model<UserModel>("User", UserSchema, "users");
 export default User;
