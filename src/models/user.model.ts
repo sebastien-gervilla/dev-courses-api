@@ -9,8 +9,8 @@ export interface UserModel extends Mongoose.Document {
     email: string,
     password: string,
     isAdmin: boolean,
-    courses: Array<{
-        course: {
+    tutorials: Array<{
+        tutorial: {
             type: Mongoose.Schema.Types.ObjectId,
             ref: "Tutorial"
         },
@@ -53,9 +53,9 @@ const UserSchema = new Mongoose.Schema({
         default: false,
         required: true
     },
-    courses: {
+    tutorials: {
         type: [{
-            course: {
+            tutorial: {
                 type: Mongoose.Schema.Types.ObjectId,
                 ref: "Tutorial"
             },

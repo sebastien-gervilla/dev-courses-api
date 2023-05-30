@@ -31,7 +31,7 @@ export const getUser = async (req: Request, res: Response) => {
         if (!isValidObjectId(id))
             return Res.send(res, 404, notFound);
 
-        const user = await User.findById(id);
+        const user = await User.findById(id).select('-tutorials');
 
         if (!user) return Res.send(res, 404, notFound);
 
