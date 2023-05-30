@@ -1,5 +1,5 @@
 import { CookieOptions, Request, Response } from "express";
-import { isValidObjectId } from 'mongoose';
+import { isValidObjectId, ObjectId } from 'mongoose';
 import { validationResult } from "express-validator";
 import User, { hashPassword, UserModel } from '../models/user.model';
 import Tutorial from "../models/tutorial.model";
@@ -9,7 +9,7 @@ import { getDaysAfter } from "../utils/date-functions";
 
 import messages from '../docs/res-messages.json';
 const { wrongInput, notFound } = messages.user;
-const { noToken, unAuth } = messages.defaults;
+const { noToken, unAuth, notAllowed } = messages.defaults;
 
 // GET
 
@@ -78,9 +78,13 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
         if (!isValidObjectId(id))
             return Res.send(res, 404, notFound);
+
+        const { _id, isAdmin } = res.locals.user;
+        if (!isAdmin && _id?.toString() !== id)
+            return Res.send(res, 403, notAllowed);
 
         const errors = validationResult(req);
         if (!errors.isEmpty())
@@ -91,8 +95,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
         const updateSet = {
             fname: req.body.fname,
-            lname: req.body.lname,
-            email: req.body.email
+            lname: req.body.lname
         };
         
         await User.findByIdAndUpdate(
