@@ -20,6 +20,7 @@
         "deleted": "Successfully deleted tutorial",
 
         "followed": "Successfully followed tutorial",
+        "completed": "Successfully completed tutorial",
         
         "wrongInput":"Identifiants incorrects",
         "notFound": "Cet utilisateur n'existe pas"
