@@ -110,11 +110,34 @@ export const followTutorial = async (req: Request, res: Response) => {
 
         await User.findOneAndUpdate(
             { _id, 'tutorials.infos': { $ne: tutorial._id } },
-            { $addToSet: { tutorials: { tutorial: tutorial._id } } },
+            { $addToSet: { tutorials: { infos: tutorial._id } } },
             { new: true, upsert: true }
         );
 
         return Res.send(res, 204, messages.tutorial.followed);
+    } catch (error) {
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}
+
+export const completeTutorial = async (req: Request, res: Response) => {
+    try {
+        const { _id } = res.locals.user;
+
+        const { id } = req.params;
+        if (!isValidObjectId(id))
+            return Res.send(res, 404, notFound);
+
+        const tutorial = await Tutorial.findById(id);
+        if (!tutorial) return Res.send(res, 404, notFound);
+
+        await User.findOneAndUpdate(
+            { _id, 'tutorials.infos': tutorial._id },
+            { $set: { 'tutorials.$.isCompleted': true } },
+            { new: true }
+        );
+
+        return Res.send(res, 204, messages.tutorial.completed);
     } catch (error) {
         return Res.send(res, 500, messages.defaults.serverError);
     }

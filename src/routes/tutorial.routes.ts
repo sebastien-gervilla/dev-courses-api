@@ -4,7 +4,7 @@ import express from 'express';
 // Controller imports
 import { 
     getTutorials, getTutorial, getTutorialById, getTutorialPreview,
-    createTutorial, followTutorial,
+    createTutorial, followTutorial, completeTutorial,
     updateTutorial,
     deleteTutorial
 } from '../controllers/tutorial.controller';
@@ -19,6 +19,7 @@ Router.get('/:slug', isAuth, getTutorial);
 Router.get('/:slug/preview', isAuth, getTutorialPreview)
 
 Router.post('/:id/follow', isAuth, followTutorial)
+Router.post('/:id/complete', isAuth, completeTutorial)
 Router.put('/:id', isAuth, isAdmin, updateTutorial);
 Router.delete('/:id', isAuth, isAdmin, deleteTutorial);
 
