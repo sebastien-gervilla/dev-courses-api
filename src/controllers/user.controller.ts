@@ -14,8 +14,6 @@ const { noToken, unAuth, notAllowed } = messages.defaults;
 
 export const authenticate = async (req: Request, res: Response) => {
     try {
-        console.log('try auth');
-        
         if (!res.locals.user)
             return Res.send(res, 401, unAuth);
 

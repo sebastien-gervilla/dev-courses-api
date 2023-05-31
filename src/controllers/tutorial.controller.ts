@@ -110,7 +110,7 @@ export const followTutorial = async (req: Request, res: Response) => {
 
         await User.findOneAndUpdate(
             { _id, 'tutorials.infos': { $ne: tutorial._id } },
-            { $addToSet: { tutorials: { tutorial: tutorial._id } } },
+            { $addToSet: { tutorials: { infos: tutorial._id } } },
             { new: true, upsert: true }
         );
 
