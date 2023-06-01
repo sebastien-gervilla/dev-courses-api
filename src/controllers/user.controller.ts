@@ -62,7 +62,7 @@ export const getUserTutorials = async (req: Request, res: Response) => {
                     path: 'tutorials', 
                     populate: {
                         path: 'infos',
-                        select: 'title technology'
+                        select: 'title slug technology'
                     }
                 }
             ]);
