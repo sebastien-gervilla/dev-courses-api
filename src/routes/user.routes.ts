@@ -25,7 +25,7 @@ Router.post('/logout', logout);
 
 Router.get('/:id', getUser);
 Router.put('/:id', isAuth, updateValidations, updateUser);
-Router.delete('/:id', deleteUser);
+Router.delete('/:id', isAuth, deleteUser);
 
 Router.put('/:id/change-password', changePassword);
 Router.post('/:id/request-password-reset', requestResetPassword);

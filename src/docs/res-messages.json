@@ -8,6 +8,7 @@
         "deleted": "Successfully deleted user",
         "login": "Successfully logged in",
         "logout": "Successfully logged out",
+        "unsubscribed": "Successfully unsubscribed",
         
         "wrongInput":"Identifiants incorrects",
         "notFound": "Cet utilisateur n'existe pas"
