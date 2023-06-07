@@ -136,13 +136,13 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
         if (!isValidObjectId(id))
             return Res.send(res, 404, notFound);
 
-        const OldUser = await User.findById(id); // TODO: 1 Request instead of 2
-        if (!OldUser)
-            return Res.send(res, 404, notFound);
+        const { _id, isAdmin } = res.locals.user;
+        if (!isAdmin && _id?.toString() !== id)
+            return Res.send(res, 403, notAllowed);
 
         await User.findByIdAndDelete(id);
 
