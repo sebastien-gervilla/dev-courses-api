@@ -13,7 +13,7 @@ const { notAllowed, serverError } = messages.defaults;
 
 export const getTutorials = async (req: Request, res: Response) => {
     try {
-        const tutorials = await Tutorial.find().select('-content');
+        const tutorials = await Tutorial.find().select('-content').sort({ updatedAt: 'desc' });
 
         return Res.send(res, 200, messages.tutorial.gotAll, tutorials);
     } catch (error) {

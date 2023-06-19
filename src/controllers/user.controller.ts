@@ -67,7 +67,11 @@ export const getUserTutorials = async (req: Request, res: Response) => {
                 }
             ]);
 
-        return Res.send(res, 200, messages.user.gotTutorials, user?.tutorials || []);
+        const tutorials = user?.tutorials.sort(
+            (a, b) => b.startingDate.getTime() - a.startingDate.getTime()
+        ) || [];
+
+        return Res.send(res, 200, messages.user.gotTutorials, tutorials);
     } catch (error) {
         return Res.send(res, 500, messages.defaults.serverError);
     }
