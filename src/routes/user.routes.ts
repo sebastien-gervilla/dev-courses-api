@@ -8,7 +8,8 @@ import {
     updateUser, 
     deleteUser,
     login, logout, authenticate,
-    changePassword, requestResetPassword, resetPassword
+    changePassword, requestResetPassword, resetPassword,
+    contact
 } from '../controllers/user.controller';
 import { isAuth, isAdmin } from '../middlewares/auth.middleware';
 import { userValidations, updateValidations } from '../models/user.model';
@@ -22,6 +23,8 @@ Router.get('/tutorials', isAuth, getUserTutorials)
 Router.get('/auth', isAuth, authenticate);
 Router.post('/login', login);
 Router.post('/logout', logout);
+
+Router.post('/contact', contact);
 
 Router.get('/:id', getUser);
 Router.put('/:id', isAuth, updateValidations, updateUser);

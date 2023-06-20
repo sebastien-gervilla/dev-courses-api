@@ -292,3 +292,24 @@ const generateConnectionToken = async (user: UserModel, res: Response) => {
 
     return Res.send(res, 204, messages.user.login);
 }
+
+// OTHER
+
+export const contact = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        if (!email) return Res.send(res, 404, notFound);
+
+        const { subject, message } = req.body;
+        if (!subject || !message)
+            return Res.send(res, 400, wrongInput);
+
+        await MailHelper.sendFrom(email, subject, message);
+
+        return Res.send(res, 204, messages.user.gotOne);
+    } catch (error) {
+        console.log(error);
+        
+        return Res.send(res, 500, messages.defaults.serverError);
+    }
+}

@@ -23,7 +23,7 @@
         "followed": "Successfully followed tutorial",
         "completed": "Successfully completed tutorial",
         
-        "wrongInput":"Identifiants incorrects",
+        "wrongInput":"Saisie incorrecte",
         "notFound": "Cet utilisateur n'existe pas"
     },
     "token": {

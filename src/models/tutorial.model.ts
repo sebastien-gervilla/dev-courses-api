@@ -6,8 +6,7 @@ export interface TutorialModel extends Mongoose.Document {
     description: string,
     content: string,
     technology: string,
-    hoursToLearn: Date,
-    isPremium: boolean
+    hoursToLearn: Date
 }
 
 const TutorialSchema = new Mongoose.Schema({
@@ -48,11 +47,6 @@ const TutorialSchema = new Mongoose.Schema({
     },
     hoursToLearn: {
         type: Number,
-        required: true
-    },
-    isPremium: {
-        type: Boolean,
-        default: false,
         required: true
     }
 }, {
