@@ -10,7 +10,7 @@ export interface UserModel extends Mongoose.Document {
     password: string,
     isAdmin: boolean,
     tutorials: Array<{
-        tutorial: {
+        infos: {
             type: Mongoose.Schema.Types.ObjectId,
             ref: "Tutorial"
         },

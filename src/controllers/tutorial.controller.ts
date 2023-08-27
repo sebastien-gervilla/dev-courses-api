@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { isValidObjectId } from 'mongoose';
 import { validationResult } from "express-validator";
-import Tutorial from '../models/tutorial.model';
+import Tutorial, { TutorialModel } from '../models/tutorial.model';
 import { Res } from "../helpers";
 
 import messages from '../docs/res-messages.json';
 import User from "../models/user.model";
 const { wrongInput, notFound, gotOne } = messages.tutorial;
-const { notAllowed, serverError } = messages.defaults;
+const { notAllowed, serverError, unAuth } = messages.defaults;
 
 // GET
 
@@ -68,6 +68,43 @@ export const getTutorialById = async (req: Request, res: Response) => {
         if (!tutorial) return Res.send(res, 404, notFound);
 
         return Res.send(res, 200, gotOne, tutorial);
+    } catch (error) {
+        return Res.send(res, 500, serverError);
+    }
+}
+
+export const isTutorialCompleted = async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params;
+        if (!slug) return Res.send(res, 404, notFound);
+
+        // const tutorial = await Tutorial.findOne({ slug });
+        // if (!tutorial) return Res.send(res, 404, notFound);
+        
+        const { _id } = res.locals.user;
+        const user = await User
+            .findById(_id)
+            .populate([
+                {
+                    path: 'tutorials', 
+                    populate: {
+                        path: 'infos',
+                        select: 'title slug technology'
+                    }
+                }
+            ]);
+
+        console.log('user:', user?.tutorials[0].infos)
+        if (!user) return Res.send(res, 401, unAuth);
+
+        const tutorials = user.tutorials;
+        for (const tutorial of tutorials) {
+            const infos = tutorial.infos as any as TutorialModel;
+            if (infos.slug === slug)
+                return Res.send(res, 200, gotOne, tutorial.isCompleted);
+        }
+
+        return Res.send(res, 404, notFound);
     } catch (error) {
         return Res.send(res, 500, serverError);
     }
