@@ -77,11 +77,10 @@ export const isTutorialCompleted = async (req: Request, res: Response) => {
     try {
         const { slug } = req.params;
         if (!slug) return Res.send(res, 404, notFound);
-
-        // const tutorial = await Tutorial.findOne({ slug });
-        // if (!tutorial) return Res.send(res, 404, notFound);
         
-        const { _id } = res.locals.user;
+        const { _id, isAdmin } = res.locals.user;
+        if (isAdmin) return Res.send(res, 200, gotOne, true);
+        
         const user = await User
             .findById(_id)
             .populate([
@@ -94,7 +93,6 @@ export const isTutorialCompleted = async (req: Request, res: Response) => {
                 }
             ]);
 
-        console.log('user:', user?.tutorials[0].infos)
         if (!user) return Res.send(res, 401, unAuth);
 
         const tutorials = user.tutorials;
@@ -106,6 +104,7 @@ export const isTutorialCompleted = async (req: Request, res: Response) => {
 
         return Res.send(res, 404, notFound);
     } catch (error) {
+        console.log(error)
         return Res.send(res, 500, serverError);
     }
 }
